@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  BabashkaLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 10
+      Tracing: "Active"
+      MemorySize: 128
+      Handler: not.used
+      Runtime: provided
+      CodeUri: function.zip
+      Policies:
+        - AWSLambdaExecute
+
+  BabashkaLambdaLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/BabashkaLambda
+      RetentionInDays: 1

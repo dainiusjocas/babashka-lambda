@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -euo pipefail
+
+export GITLIBS=".gitlibs/"
+export DISABLE_PIPE_SIGNAL_HANDLING="true"
+
+./bb --classpath "$(cat cp)" -m lambda.core
