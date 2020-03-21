@@ -7,7 +7,7 @@
 
 (defn -main [& _]
   (let [k :test
-        v "test"
+        v (str "test-" (rand-int 1000))
         ; input to handler-fn is a parsed request body
         handler-fn (fn [request] (my-assoc request k v))]
     (runtime/init handler-fn)))

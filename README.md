@@ -6,11 +6,28 @@ This example requires GNU Make, Docker, and AWS CLI, babashka, clojure.
 
 ## Usage
 
+Provide `stack` for cloudformation stack name and `s3-bucket` params.
+
 ```shell script
 make stack="babashka-lambda" s3-bucket="my-bucket" deploy
 ```
 
-Make sure that you have `my-bucket`.
+Make sure that your provided S3 bucket, e.g. `my-bucket` exists. And of course, make sure you are authorized to deploy to AWS.
+
+## Test Lambda with AWS CLI
+
+```shell script
+make function-name=$(make get-function-name) invoke-function
+```
+The response should be similar:
+```shell script
+{"test":"test914"}{
+    "StatusCode": 200,
+    "ExecutedVersion": "$LATEST"
+}
+```
+
+Get the function name:
 
 ## Development
 

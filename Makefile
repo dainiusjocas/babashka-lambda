@@ -20,3 +20,9 @@ deploy: package
         --stack-name $(stack) \
         --capabilities CAPABILITY_IAM \
         --no-fail-on-empty-changeset
+
+get-function-name:
+	@aws lambda list-functions | bb -cp "$(clojure -Sdeps '{:mvn/local-repo "./.m2/repository"}' -Spath)" -i  "(require '[cheshire.core :as json]) (->> (json/decode (str/join *input*) true) :Functions (filter (fn [function] (re-matches #\".*babashka.*\" (:FunctionName function)))) first :FunctionName)"
+
+invoke-function:
+	@aws lambda invoke --function-name $(function-name) --payload '{}' /dev/stdout
