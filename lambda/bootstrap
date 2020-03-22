@@ -2,6 +2,6 @@
 
 set -euo pipefail
 
-export DISABLE_PIPE_SIGNAL_HANDLING="true"
+export BABASHKA_DISABLE_PIPE_SIGNAL_HANDLER="true"
 
 ./bb --classpath "$(cat cp)" -m lambda.core

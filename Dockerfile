@@ -1,4 +1,4 @@
-FROM dainiusjocas/babashka:latest as BABASHKA
+FROM borkdude/babashka:0.0.78 as BABASHKA
 
 FROM clojure:tools-deps-alpine as BUILDER
 RUN apk add --no-cache zip

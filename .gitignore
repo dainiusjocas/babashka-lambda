@@ -5,4 +5,4 @@
 .gitlibs/
 .env
 function.zip
-.nrep-port
+.nrepl-port
