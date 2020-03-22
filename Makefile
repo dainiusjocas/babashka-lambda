@@ -22,7 +22,7 @@ deploy: package
         --no-fail-on-empty-changeset
 
 get-function-name:
-	@aws lambda list-functions | bb -i  "(require '[cheshire.core :as json]) (->> (json/decode (str/join *input*) true) :Functions (filter (fn [function] (re-matches #\".*babashka.*\" (:FunctionName function)))) (map :FunctionName))"
+	@aws lambda list-functions | bb -i  "(->> (json/decode (str/join *input*) true) :Functions (filter (fn [function] (re-matches #\".*babashka.*\" (:FunctionName function)))) (map :FunctionName))"
 
 invoke-function:
 	@aws lambda invoke --function-name $(function-name) --payload '{}' /dev/stdout
