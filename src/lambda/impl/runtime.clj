@@ -1,38 +1,24 @@
 (ns lambda.impl.runtime
   (:require
-    [babashka.curl :as curl]
     [cheshire.core :as json]
-    [clojure.string :as str]))
-
-(defn resp->map [resp]
-  (let [lines (str/split resp #"\r\n")
-        status (Integer/parseInt (second (str/split (first lines) #" ")))
-        headers (reduce (fn [acc header-line]
-                          (let [[k v] (str/split header-line #":" 2)]
-                            (assoc acc (str/lower-case k) (str/trim v))))
-                        {}
-                        (remove str/blank? (drop-last (rest lines))))]
-    {:body    (last lines)
-     :status  status
-     :headers headers}))
+    [clj-http.lite.client :as http]))
 
 (defn- get-lambda-invocation-request [runtime-api]
-  (resp->map
-    (curl/request
-      {:method   :get
-       :url      (str "http://" runtime-api "/2018-06-01/runtime/invocation/next")
-       :timeout  900000
-       :raw-args ["-i"]})))
+  (http/request
+    {:method   :get
+     :url      (str "http://" runtime-api "/2018-06-01/runtime/invocation/next")
+     :timeout  900000
+     :raw-args ["-i"]}))
 
 (defn- send-response [runtime-api lambda-runtime-aws-request-id response-body]
-  (curl/request
+  (http/request
     {:method  :post
      :url     (str "http://" runtime-api "/2018-06-01/runtime/invocation/" lambda-runtime-aws-request-id "/response")
      :body    response-body
      :headers {"Content-Type" "application/json"}}))
 
 (defn- send-error [runtime-api lambda-runtime-aws-request-id error-body]
-  (curl/request
+  (http/request
     {:method  :post
      :url     (str "http://" runtime-api "/2018-06-01/runtime/invocation/" lambda-runtime-aws-request-id "/error")
      :body    error-body
@@ -40,7 +26,11 @@
 
 (defn- request->response [request-body handler-fn]
   (let [decoded-request (json/decode request-body true)]
-    (json/encode (handler-fn decoded-request))))
+    (if-let [body (:body decoded-request)]
+      (json/encode
+        {:statusCode 200
+         :body       (json/encode (handler-fn (json/decode body true)))})
+      (json/encode (handler-fn decoded-request)))))
 
 (defn init [handler-fn]
   (let [runtime-api (System/getenv "AWS_LAMBDA_RUNTIME_API")]
