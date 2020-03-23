@@ -15,4 +15,6 @@ RUN clojure -Sdeps '{:mvn/local-repo "./.m2/repository"}' -Spath > cp
 COPY src/ src/
 COPY resources/ resources/
 
-RUN zip -q -r function.zip bb cp bootstrap .gitlibs/ .m2/ src/ resources/ deps.edn
+RUN ./bb -cp $(cat cp) -m lambda.core --uberscript core.clj
+
+RUN zip -q -r function.zip bb bootstrap core.clj

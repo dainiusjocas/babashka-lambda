@@ -4,4 +4,4 @@ set -euo pipefail
 
 export BABASHKA_DISABLE_PIPE_SIGNAL_HANDLER="true"
 
-./bb --classpath "$(cat cp)" -m lambda.core
+./bb core.clj
