@@ -1,28 +1,30 @@
 (ns lambda.impl.runtime
+  "Integration with the AWS Lambda runtime API,
+  see https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html"
   (:require
     [cheshire.core :as json]
-    [clj-http.lite.client :as http]))
+    [org.httpkit.client :as http]))
 
 (defn- get-lambda-invocation-request [runtime-api]
-  (http/request
-    {:method   :get
-     :url      (str "http://" runtime-api "/2018-06-01/runtime/invocation/next")
-     :timeout  900000
-     :raw-args ["-i"]}))
+  @(http/request
+     {:method   :get
+      :url      (str "http://" runtime-api "/2018-06-01/runtime/invocation/next")
+      :timeout  900000
+      :raw-args ["-i"]}))
 
 (defn- send-response [runtime-api lambda-runtime-aws-request-id response-body]
-  (http/request
-    {:method  :post
-     :url     (str "http://" runtime-api "/2018-06-01/runtime/invocation/" lambda-runtime-aws-request-id "/response")
-     :body    response-body
-     :headers {"Content-Type" "application/json"}}))
+  @(http/request
+     {:method  :post
+      :url     (str "http://" runtime-api "/2018-06-01/runtime/invocation/" lambda-runtime-aws-request-id "/response")
+      :body    response-body
+      :headers {"Content-Type" "application/json"}}))
 
 (defn- send-error [runtime-api lambda-runtime-aws-request-id error-body]
-  (http/request
-    {:method  :post
-     :url     (str "http://" runtime-api "/2018-06-01/runtime/invocation/" lambda-runtime-aws-request-id "/error")
-     :body    error-body
-     :headers {"Content-Type" "application/json"}}))
+  @(http/request
+     {:method  :post
+      :url     (str "http://" runtime-api "/2018-06-01/runtime/invocation/" lambda-runtime-aws-request-id "/error")
+      :body    error-body
+      :headers {"Content-Type" "application/json"}}))
 
 (defn- request->response [request-body handler-fn]
   (let [decoded-request (json/decode request-body true)]
@@ -35,7 +37,7 @@
 (defn init [handler-fn]
   (let [runtime-api (System/getenv "AWS_LAMBDA_RUNTIME_API")]
     (loop [req (get-lambda-invocation-request runtime-api)]
-      (let [lambda-runtime-aws-request-id (get (get req :headers) "lambda-runtime-aws-request-id")]
+      (let [lambda-runtime-aws-request-id (-> req :headers :lambda-runtime-aws-request-id)]
         (when-let [error (get req :error)]
           (send-error runtime-api lambda-runtime-aws-request-id (str error))
           (throw (Exception. (str error))))

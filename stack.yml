@@ -9,7 +9,7 @@ Resources:
       Tracing: "Active"
       MemorySize: 128
       Handler: not.used
-      Runtime: provided
+      Runtime: provided # or provided.al2 for the newer Amazon Linux v2
       CodeUri: function.zip
       Policies:
         - AWSLambdaExecute
