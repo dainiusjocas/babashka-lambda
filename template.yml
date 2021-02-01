@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Example babashka-based lambda
+Transform:
+- AWS::Serverless-2016-10-31
+
+Resources:
+  BabashkaLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: BabashkaLambda
+      Description: Example babashka-based lambda
+      Runtime: provided.al2
+      Handler: ignored-runs.the.bootstrap.shell.script
+      MemorySize: 128
+      Timeout: 60
+      Policies:
+        - AWSLambdaExecute
