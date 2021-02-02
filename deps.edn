@@ -1,8 +1,11 @@
 {:paths   ["src" "resources"]
- :deps    {clj-http-lite {:git/url "https://github.com/borkdude/clj-http-lite"
-                          :sha     "f44ebe45446f0f44f2b73761d102af3da6d0a13e"}}
- :aliases {:dev
+ :deps    {}
+ :aliases {;; Active dev to make dependencies bundled with bb visible to your IDE
+           :dev
            {:extra-paths ["dev" "classes"]
-            :extra-deps  {cheshire {:mvn/version "5.8.1"}
-                          babashka.curl {:git/url "https://github.com/borkdude/babashka.curl.git"
-                                         :sha "3104d234a63fca71f0d3557c5d3dc23f4fbc294f"}}}}}
+            :extra-deps  {cheshire/cheshire {:mvn/version "5.8.1"}
+                          http-kit/http-kit {:mvn/version "2.5.0"}}}
+           ;; Config for bb --uberjar, see https://book.babashka.org/#_uberjar
+           :remove-clojure {:classpath-overrides {org.clojure/clojure nil
+                                                  org.clojure/spec.alpha nil
+                                                  org.clojure/core.specs.alpha nil}}}}
