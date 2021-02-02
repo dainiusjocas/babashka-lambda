@@ -1,8 +1,1 @@
-**/*.iml
-.idea/
-.cpcache
-.m2/
-.gitlibs/
-.env
-function.zip
-.nrepl-port
+.aws-sam/

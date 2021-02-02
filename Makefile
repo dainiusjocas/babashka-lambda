@@ -1,11 +1,13 @@
-stack = babashka-lambda
-s3-bucket = my-bucket
-
+# SHARED
 build:
 	docker build --target BUILDER -t babashka-lambda-archiver .
 	docker rm build || true
 	docker create --name build babashka-lambda-archiver
 	docker cp build:/var/task/function.zip function.zip
+
+# ALTERNATIVE 1: Using CloudFormation
+stack = babashka-lambda
+s3-bucket = my-bucket
 
 package: build
 	aws cloudformation package \
@@ -26,3 +28,8 @@ get-function-name:
 
 invoke-function:
 	@aws lambda invoke --function-name $(function-name) --payload '{}' /dev/stdout
+
+# ALTERNATIVE 2: Using AWS SAM CLI
+# we need build-<function name from template.yml> for `sam build` and we need it to output into the SAM-provided artifacts dir:
+build-BabashkaLambda: build
+	unzip function.zip -d $(ARTIFACTS_DIR)

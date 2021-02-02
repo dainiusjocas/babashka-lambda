@@ -6,6 +6,16 @@ This example requires GNU Make, Docker, and AWS CLI, babashka, clojure.
 
 ## Usage
 
+### With AWS SAM CLI
+
+Build: `sam build`
+
+Deploy: `sam deploy --guided` (and just `sam deploy` thereafter)
+
+Test locally: `sam local invoke --event events/event-cloudwatch-event.json --debug`
+
+### With CloudFormation
+
 Provide `stack` for cloudformation stack name and `s3-bucket` params.
 
 ```shell script
